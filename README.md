@@ -19,5 +19,5 @@ serializer 및 view 함수 작성 과정에서 navigator 역할을 맡았다.
 
 ### 새로 배운 점
 
->>>>>>> README.md
+
 ### 어려웠던 점
