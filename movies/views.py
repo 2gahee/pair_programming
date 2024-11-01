@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics, filters
 from .serializers import ActorListSerializer, ActorSerializer, MovieListSerializer, MovieSerializer, ReviewListSerializer, ReviewSerializer
 from .models import Actor, Movie, Review
+
 
 # Create your views here.
 
@@ -63,3 +64,20 @@ def create_review(request, movie_pk):
     if serializer.is_valid():
         serializer.save(movie=movie)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+def movie_search(request):
+    query = request.GET.get('search', None)
+    print(query)
+    if query:
+        movies = Movie.objects.filter(title__icontains=query) | Movie.objects.filter(overview__icontains=query)
+    if not movies:    
+        message = f'{query}에 해당하는 검색 결과가 없습니다.'
+        context = {
+            'message': message
+        }
+        return Response(context)
+
+    serializer = MovieSerializer(movies, many=True)
+    return Response(serializer.data)
